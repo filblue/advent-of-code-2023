@@ -1,25 +1,101 @@
-import Algorithms
+import Foundation
+import Parsing
 
 struct Day00: AdventDay {
-  // Save your data in a corresponding text file in the `Data` directory.
   var data: String
 
-  // Splits input data into its component parts and convert from string.
-  var entities: [[Int]] {
-    data.split(separator: "\n\n").map {
-      $0.split(separator: "\n").compactMap { Int($0) }
-    }
-  }
-
-  // Replace this with your solution for the first part of the day's challenge.
   func part1() -> Any {
-    // Calculate the sum of the first set of input data
-    entities.first?.reduce(0, +) ?? 0
+    var data = data.trimmingCharacters(in: .whitespacesAndNewlines)[...]
+    let parser: some Parser<Substring, Int> = Many(into: 0, +=) {
+      Parse {
+        Skip { CharacterSet.letters }
+        Many {
+          Digits(1)
+          Skip { CharacterSet.letters }
+        }
+      }
+      .map { $0.first! * 10 + $0.last! }
+    } separator: {
+      Whitespace(1, .vertical)
+    }
+    return try! parser.parse(&data)
   }
 
-  // Replace this with your solution for the second part of the day's challenge.
   func part2() -> Any {
-    // Sum the maximum entries in each set of data
-    entities.map { $0.max() ?? 0 }.reduce(0, +)
+    data.sumOfCalibrationValues
   }
+}
+
+extension String {
+  var sumOfCalibrationValues: Int {
+    self
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+      .components(separatedBy: .newlines)
+      .calibrationValues
+      .reduce(0, +)
+  }
+}
+
+extension Collection where Element == String {
+  var calibrationValues: [Int] { self.map(\.calibrationValue) }
+}
+
+extension String {
+  var calibrationValue: Int {
+    self.firstDigit * 10 + self.lastDigit
+  }
+
+  var firstDigit: Int {
+    var input = self[...]
+    return try! firstDigitParser.parse(&input)
+  }
+
+  var lastDigit: Int {
+    var input = String(self.reversed())[...]
+    return try! lastDigitParser.parse(&input)
+  }
+}
+
+let lastDigitParser: some Parser<Substring, Int> = Many {
+  OneOf {
+    reversedSpelledOutDigitParser
+    Digits(1)
+    Skip { First().filter { !$0.isNewline } }.map { _ in 0 }
+  }
+}
+  .map { $0.first(where: { $0 > 0 })! }
+
+let reversedSpelledOutDigitParser: some Parser<Substring, Int> = OneOf {
+  for d in SpelledOutDigit.allCases {
+    String(d.string.reversed()).map { d.rawValue }
+  }
+}
+
+let firstDigitParser: some Parser<Substring, Int> = Many {
+  OneOf {
+    spelledOutDigitParser
+    Digits(1)
+    Skip { First().filter { !$0.isNewline } }.map { _ in 0 }
+  }
+}
+.map { $0.first(where: { $0 > 0 })! }
+
+let spelledOutDigitParser: some Parser<Substring, Int> = OneOf {
+  for d in SpelledOutDigit.allCases {
+    d.string.map { d.rawValue }
+  }
+}
+
+enum SpelledOutDigit: Int, CaseIterable {
+  case one = 1
+  case two
+  case three
+  case four
+  case five
+  case six
+  case seven
+  case eight
+  case nine
+
+  var string: String { "\(self)" }
 }
