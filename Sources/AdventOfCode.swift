@@ -12,6 +12,7 @@ let allChallenges: [any AdventDay] = [
   Day07(),
   Day08(),
   Day09(),
+  Day10(),
 ]
 
 @main
@@ -73,5 +74,14 @@ struct AdventOfCode: AsyncParsableCommand {
         print("Looks like you're benchmarking debug code. Try swift run -c release")
       #endif
     }
+  }
+}
+
+func print<T>(grid: [[T]], padding: Int) {
+  for row in grid {
+    for cell in row {
+      print("\(cell)".padding(toLength: padding, withPad: " ", startingAt: 0), terminator: "")
+    }
+    print()
   }
 }
