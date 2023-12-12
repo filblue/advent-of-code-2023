@@ -49,6 +49,7 @@ final class Day10Tests: XCTestCase {
       4
     )
   }
+  
   func testPart1() throws {
     XCTAssertEqual(
       try Day10().part1() as! Int,
