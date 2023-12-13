@@ -64,7 +64,7 @@ private func arrangementsDroppingFirstGround(
   _ row: Substring,
   _ numbers: ArraySlice<Int>
 ) -> Int {
-  guard let match = row.prefixMatch(of: /[\?.]/) else { return 0 }
+  guard row.prefixMatch(of: /[\?.]/) != nil else { return 0 }
   return arrangements(row[row.index(after: row.startIndex)...], numbers)
 }
 
