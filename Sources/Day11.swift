@@ -40,7 +40,7 @@ private func sumOfPossibleArrangements(in rows: [(Substring, [Int])]) -> Int {
   rows.map { arrangements($0.0, $0.1[...]) }.reduce(0, +)
 }
 
-struct CacheKey: Hashable {
+private struct CacheKey: Hashable {
   let row: String
   let numbers: [Int]
 }
