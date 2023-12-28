@@ -42,4 +42,5 @@ final class Day17Tests: XCTestCase {
       ).part1() as! Int,
       9
     )
-  }}
+  }
+}
